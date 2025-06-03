@@ -25,16 +25,18 @@ export interface FormInputs {
 
 const JobPostingForm = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const { mutate, isPending, isError, error } = useCreateJob();
-  
-  
+  const { mutate, isPending, isError, error } = useCreateJob();
+
+
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
+    reset
+
   } = useForm<FormInputs>({
     defaultValues: {
       jobTitle: '',
@@ -52,6 +54,7 @@ const JobPostingForm = () => {
 
   const onSubmit = (data: FormInputs) => {
     mutate(data)
+    reset();
   };
 
   const getTomorrowDate = () => {
@@ -63,7 +66,7 @@ const JobPostingForm = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-        setValue("image", file);
+      setValue("image", file);
     }
   };
 
