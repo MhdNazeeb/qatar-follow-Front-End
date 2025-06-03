@@ -1,5 +1,5 @@
-import { Calendar, ChevronDown, Home, Inbox, LogOut, Search, Settings } from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {  ChevronDown, LogOut, } from "lucide-react"
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 import {
   Sidebar,
