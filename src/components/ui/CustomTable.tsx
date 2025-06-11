@@ -22,8 +22,8 @@ interface CustomTableProps {
 
 export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
     const [jobs, setJobs] = useState<JobData[]>([])
-    const [modalOpen,setModalOpen] = useState<boolean>(false)
-    const [id,setId] = useState<string>()
+    const [modalOpen, setModalOpen] = useState<boolean>(false)
+    const [id, setId] = useState<string>()
     useEffect(() => {
         console.log(data, 'data jobs new');
         setJobs(data)
@@ -41,25 +41,36 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
 
                 </TableRow>
             </TableHeader>
-            <TableBody>
-                {jobs?.map((item:JobData) => (
-                    <TableRow key={item?._id} >
-                        <TableCell className="font-medium">{item?.companyName}</TableCell>
-                        <TableCell>{item?.jobTitle}</TableCell>
-                        <TableCell onClick={()=>{
-                            setModalOpen((state)=>!state)
-                            setId(item?._id)
-                            }} className="bg-black text-center text-white rounded-xl max-w-[1%] cursor-pointer">{`${item?.jobsStatus == true ? "blocked" : "active"}`}</TableCell>
-                        <TableCell >{item?.jobDescription}</TableCell>
-                        <GrView />
 
+            <TableBody>
+                {jobs?.map((item: JobData) => (
+                    <TableRow
+                        key={item?._id}
+                        className="bg-white hover:bg-gray-50 transition rounded-xl border-b shadow-sm"
+                    >
+                        <TableCell className="py-4 px-4 font-medium">{item?.companyName}</TableCell>
+                        <TableCell className="py-4 px-4">{item?.jobTitle}</TableCell>
+                        <TableCell
+                            className="py-5 px-4 text-center text-white rounded-lg cursor-pointer bg-black"
+                            onClick={() => {
+                                setModalOpen((state) => !state);
+                                setId(item?._id);
+                            }}
+                        >
+                            {item?.jobsStatus === true ? "blocked" : "active"}
+                        </TableCell>
+                        <TableCell className="py-4 px-4">{item?.jobDescription}</TableCell>
+                        <TableCell className="py-4 px-4">
+                            <GrView className="cursor-pointer" />
+                        </TableCell>
                     </TableRow>
                 ))}
             </TableBody>
+
             <CustomAlert header="" description="" modalOpen={modalOpen} setModalOpen={setModalOpen} id={id} />
 
         </Table>
-        
+
     )
 
 }
