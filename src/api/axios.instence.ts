@@ -12,7 +12,6 @@ const adminApi = axios.create({
   },
 });
 // Add request interceptor
-
 adminApi.interceptors.request.use(
   (config) => {
     const { token } = getLocalData("user") || {};
