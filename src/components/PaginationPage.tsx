@@ -74,7 +74,6 @@ export default function PaginationPage({ page, setPage, totalPages }: Pagination
             // disabled={page === 1}
           />
         </PaginationItem>
-
         {pageNumbers.map((pageNumber) => (
           <PaginationItem key={pageNumber}>
             <PaginationLink
