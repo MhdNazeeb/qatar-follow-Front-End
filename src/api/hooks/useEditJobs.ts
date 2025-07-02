@@ -8,7 +8,7 @@ export const useEditJobs = () => {
         mutationFn: (data: any) => adminApi.put(`/job/${data.id}`,{ data}),
         onSuccess: (data: any) => {
             toastSuccess(data);
-            queryClient.invalidateQueries({ queryKey: ["job"] });
+            queryClient.invalidateQueries({ queryKey: ["job","jobs"] });
         },
         onError: (error: any) => {
         toastSuccess(error)
