@@ -2,7 +2,7 @@ import JobPostingForm from "@/components/JobPostingForm";
 
 interface PageProps {
   params: {
-    id: string;
+    id: any;
   };
 }
 
