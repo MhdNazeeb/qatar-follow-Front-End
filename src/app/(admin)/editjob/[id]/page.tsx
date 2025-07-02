@@ -1,12 +1,15 @@
-import JobPostingForm from '@/components/JobPostingForm';
-import React from 'react'
+import JobPostingForm from "@/components/JobPostingForm";
 
-function EditJob({ params }: { params: { id: string } }) {
-  return (
-    <div className="flex items-center justify-center min-w-[80%]">
-      <JobPostingForm isEdit={true} jobId={params?.id} />
-    </div>
-  )
+interface PageProps {
+  params: {
+    id: string;
+  };
 }
 
-export default EditJob
+export default function EditJob({ params }: PageProps) {
+  return (
+    <div className="flex items-center justify-center min-w-[80%]">
+      <JobPostingForm isEdit={true} jobId={params.id} />
+    </div>
+  );
+}
