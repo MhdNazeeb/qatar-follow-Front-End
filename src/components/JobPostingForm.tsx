@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,8 @@ import { ImagePlus } from 'lucide-react';
 import { useForm, Controller } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateJob } from '@/api/hooks/useCreateJob';
+import { useGetJob } from '@/api/hooks/useGetJob';
+import { useEditJobs } from '@/api/hooks/useEditJobs';
 
 export interface FormInputs {
   jobTitle: string;
@@ -22,11 +24,16 @@ export interface FormInputs {
   expirationDate: string;
   image: File | null;
 }
+interface JobPostingFormProps {
+  isEdit: boolean;
+  jobId?: string;
 
-const JobPostingForm = () => {
+}
+const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { mutate, isPending, isError, error } = useCreateJob();
-
+  const { data: jobData, isLoading } = useGetJob(jobId || '', isEdit);
+  const { mutate: editJob } = useEditJobs();
 
   const {
     control,
@@ -38,23 +45,20 @@ const JobPostingForm = () => {
     reset
 
   } = useForm<FormInputs>({
-    defaultValues: {
-      jobTitle: '',
-      companyName: '',
-      jobType: '',
-      industry: '',
-      jobDescription: '',
-      email: '',
-      websiteLink: '',
-      experience: '',
-      expirationDate: '',
-      image: null,
-    }
   });
 
   const onSubmit = (data: FormInputs) => {
-    mutate(data)
-    reset();
+    if (isEdit) {
+      const formData = editJob({
+        id: jobId,
+        ...data
+      })
+      console.log(formData, 'this is form data bro>>>>>>');
+    } else {
+      mutate(data)
+      reset();
+
+    }
   };
 
   const getTomorrowDate = () => {
@@ -63,19 +67,37 @@ const JobPostingForm = () => {
     return tomorrow.toISOString().split('T')[0];
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setValue("image", file);
     }
-  };
+  }, [setValue]);
+
+  useEffect(() => {
+    if (jobData) {
+      reset({
+        jobTitle: jobData.jobTitle || "",
+        companyName: jobData.companyName || "",
+        jobType: jobData.jobType || "",
+        industry: jobData.industry || "",
+        jobDescription: jobData.jobDescription || "",
+        email: jobData.email || "",
+        websiteLink: jobData.websiteLink || "",
+        experience: jobData.experience || "",
+        expirationDate: jobData.expirationDate
+          ? new Date(jobData.expirationDate).toISOString().split("T")[0]
+          : "",
+      });
+    }
+  }, [jobData, setValue]);
 
   const image = watch('image');
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Create New Job</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">{isEdit ? "Edit Job" : "Create New Job"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -215,7 +237,7 @@ const JobPostingForm = () => {
               <Input
                 {...register("websiteLink", {
                   pattern: {
-                    value: /^https?:\/\/.+/,
+                    value: /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}([\/\w.-]*)*\/?$/,
                     message: "Please enter a valid URL"
                   }
                 })}
@@ -276,7 +298,10 @@ const JobPostingForm = () => {
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" className="w-full" onClick={handleSubmit(onSubmit)}>
+        <Button type="submit" className="w-full" onClick={
+
+          handleSubmit(onSubmit)
+        }>
           Submit Job Posting
         </Button>
       </CardFooter>
@@ -284,4 +309,4 @@ const JobPostingForm = () => {
   );
 };
 
-export default JobPostingForm;
+export default JobPostingForm;    
