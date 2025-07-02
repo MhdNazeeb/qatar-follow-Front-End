@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { GrView } from "react-icons/gr";
 import { CustomAlert } from "../CustomAlert";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
-
+import { useRouter } from "next/navigation";
 
 
 interface CustomTableProps {
@@ -24,6 +24,7 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
     const [jobs, setJobs] = useState<JobData[]>([])
     const [modalOpen, setModalOpen] = useState<boolean>(false)
     const [id, setId] = useState<string>()
+    const router = useRouter()
     useEffect(() => {
         console.log(data, 'data jobs new');
         setJobs(data)
@@ -60,7 +61,9 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
                             {item?.jobsStatus === true ? "blocked" : "active"}
                         </TableCell>
                         <TableCell className="py-4 px-4">{item?.jobDescription}</TableCell>
-                        <TableCell className="py-4 px-4">
+                        <TableCell className="py-4 px-4" onClick={() => {
+                            router.push(`/editjob/${item?._id}`);
+                        }}>
                             <GrView className="cursor-pointer" />
                         </TableCell>
                     </TableRow>
