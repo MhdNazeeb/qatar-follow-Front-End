@@ -3,33 +3,30 @@ import adminApi from "../axios.instence";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { setLocalData } from "@/utils/locallStorage";
 import { useRouter } from "next/navigation";
+import { FormValues } from "@/app/(admin)/user_creation/page";
 
 
-export function useCreateLogin() {
+export function useUserCreation() {
     const queryClient = useQueryClient();
     const router = useRouter();
 
     const mutation = useMutation({
-        
-        mutationFn: async (loginData: { email: string; password: string }) => {
 
-            const { data } = await adminApi.post("/login", loginData);
+        mutationFn: async (userData: FormValues) => {
+            console.log(userData,'this is the user data');
+            
+            const { data } = await adminApi.post("/user_creation", userData);
+
             return data;
         },
         onSuccess: (data) => {
-            setLocalData("user", data)
             toastSuccess(data)
-              
-            setTimeout(() => {
-                router.replace("/")
-
-            }, 1000);
         },
         onError: (error: any) => {
-            console.log(error,'this is the error');
-            
             toastError(error)
         }
+
+
 
     });
 

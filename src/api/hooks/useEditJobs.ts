@@ -17,6 +17,7 @@ export const useEditJobs = () => {
         },
         onError: (error: any) => {
             toastSuccess(error)
+            
         },
     });
     return {
