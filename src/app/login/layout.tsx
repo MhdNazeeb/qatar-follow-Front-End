@@ -15,7 +15,6 @@ export default function RootLayout({
                 <ToastProvider>
                     <ReactQueryProvider>
                         {children}
-
                     </ReactQueryProvider>
                 </ToastProvider>
             </body>

@@ -14,7 +14,7 @@ import { GrView } from "react-icons/gr";
 import { CustomAlert } from "../CustomAlert";
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { useRouter } from "next/navigation";
-import { modalTypes, permissions } from "@/common/types/strings";
+import { modalTypes, permissions ,userRols} from "@/common/types/strings";
 import { useRestrictions } from "@/hooks/useRestrictions";
 
 
@@ -31,7 +31,6 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
     const [id, setId] = useState<string>()
     const router = useRouter()
     useEffect(() => {
-        console.log(data, 'data jobs new');
         setJobs(data)
     }, [data])
     return (
@@ -44,7 +43,7 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
                     <TableHead className="w-[100px]">Status</TableHead>
                     {/* <TableHead >Dicription</TableHead> */}
                     <TableHead >VIEW</TableHead>
-                    {!isRestricted(permissions.SUPER_ACTIVE)&&<TableHead className="w-[100px]">SuperActive</TableHead>}
+                    {!isRestricted(permissions.SUPER_ACTIVE) && <TableHead className="w-[100px]">SuperActive</TableHead>}
                 </TableRow>
             </TableHeader>
 
@@ -52,8 +51,10 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
                 {jobs?.map((item: JobData) => (
                     <TableRow
                         key={item?._id}
-                        className="bg-white hover:bg-gray-50 transition rounded-xl border-b shadow-sm"
-                    >
+                        className={`transition rounded-xl border-b shadow-sm ${item.role === userRols.HR
+                                ? "bg-gray-400 hover:bg-gray-400"
+                                : "bg-white hover:bg-gray-50"
+                            }`}                    >
                         <TableCell className="py-4 px-4 font-medium">{item?.companyName}</TableCell>
                         <TableCell className="py-4 px-4">{item?.jobTitle}</TableCell>
                         <TableCell
@@ -80,7 +81,7 @@ export const CustomTable: React.FC<CustomTableProps> = ({ data }) => {
 
                             onClick={() => {
                                 setModalOpen((state) => !state);
-                                setModalType(modalTypes.SUPER_ACTIVE) 
+                                setModalType(modalTypes.SUPER_ACTIVE)
                                 setDescription("this is for editing super_active")
                                 setId(item?._id);
                             }}

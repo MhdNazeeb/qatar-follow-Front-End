@@ -19,5 +19,6 @@ export const useRestrictions = () => {
     return {
         isRestricted,
         userRole,
+        
     }
 }

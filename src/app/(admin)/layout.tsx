@@ -8,6 +8,7 @@ import { ToastProvider } from "@/providers/ToastProvider";
 import { getLocalData } from "@/utils/locallStorage";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ClientLayoutWrapper from "@/layout/ClientLayoutWrapper.tsx";
 
 
 export default function RootLayout({
@@ -17,12 +18,10 @@ export default function RootLayout({
 }>) {
 
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<unknown>(null);
 
   useEffect(() => {
-    const storedUser: any = getLocalData("user");
-    console.log("Stored User:", storedUser);
-
+    const storedUser = getLocalData("user");
     if (!storedUser) {
       router.push("/login");
     } else {
@@ -34,15 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body
       >
-        <ReactQueryProvider>
-          <ToastProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarTrigger />
-              {children}
-            </SidebarProvider>
-          </ToastProvider>
-        </ReactQueryProvider>
+        <ClientLayoutWrapper >
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );

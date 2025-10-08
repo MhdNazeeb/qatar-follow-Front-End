@@ -10,11 +10,10 @@ export function useGetJobs(page: number) {
         queryKey: ["jobs", page],
         queryFn: async () => {
             try {
-                console.log('cheking bro');
-
                 const { data } = await adminApi.get<JobData[] | any>("/job", {
                     params: { page, limit: 10 },
                 });
+                
                 return data;
             } catch (error: any) {
                 toastError(error?.message || "Failed to fetch jobs");

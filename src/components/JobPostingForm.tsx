@@ -1,5 +1,5 @@
 "use client"
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,7 @@ export interface FormInputs {
   experience: string;
   expirationDate: string;
   image: File | null;
+  phone: string;
 }
 interface JobPostingFormProps {
   isEdit: boolean;
@@ -31,6 +32,7 @@ interface JobPostingFormProps {
 }
 const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [imageError, setImageError] = useState<string>("");
   const { mutate, isPending, isError, error } = useCreateJob();
   const { data: jobData, isLoading } = useGetJob(jobId || '', isEdit);
   const { mutate: editJob } = useEditJobs();
@@ -48,16 +50,20 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
   });
 
   const onSubmit = (data: FormInputs) => {
+    // Check if there's an image error before submitting
+    if (imageError) {
+      return;
+    }
+
     if (isEdit) {
       const formData = editJob({
         id: jobId,
         ...data
       })
-      console.log(formData, 'this is form data bro>>>>>>');
     } else {
       mutate(data)
       reset();
-
+      setImageError("");
     }
   };
 
@@ -69,7 +75,32 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
 
   const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
+      const maxSize = 3 * 1024 * 1024;
+
+      if (file.size > maxSize) {
+        setImageError(`Image size must be less than 3MB. Current size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+        setValue("image", null);
+        // Reset the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        setImageError('Please select a valid image file');
+        setValue("image", null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+
+      // Clear any previous errors
+      setImageError("");
       setValue("image", file);
     }
   }, [setValue]);
@@ -83,6 +114,7 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
         industry: jobData.industry || "",
         jobDescription: jobData.jobDescription || "",
         email: jobData.email || "",
+        phone: jobData.phone || "",
         websiteLink: jobData.websiteLink || "",
         experience: jobData.experience || "",
         expirationDate: jobData.expirationDate
@@ -90,7 +122,7 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
           : "",
       });
     }
-  }, [jobData, setValue]);
+  }, [jobData, reset]);
 
   const image = watch('image');
 
@@ -231,6 +263,26 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
                 <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Contact Phone</Label>
+              <Input
+                {...register("phone", {
+                  pattern: {
+                    value: /^(?:\+974)?[3-7]\d{7}$/,
+                    message: "Please enter a valid Qatar phone number"
+                  }
+                })}
+
+                id="phone"
+                type="tel"
+                placeholder="Enter contact phone"
+                className={`w-full ${errors.phone ? 'border-red-500' : ''}`}
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+              )}
+            </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="websiteLink">Website Link</Label>
@@ -282,7 +334,7 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className={`w-full ${imageError ? 'border-red-500' : ''}`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <ImagePlus className="w-4 h-4 mr-2" />
@@ -294,14 +346,20 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
                 </span>
               )}
             </div>
+            {imageError && (
+              <p className="text-red-500 text-sm mt-1">{imageError}</p>
+            )}
+            <p className="text-sm text-gray-500">Maximum file size: 3MB</p>
           </div>
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" className="w-full" onClick={
-
-          handleSubmit(onSubmit)
-        }>
+        <Button
+          type="submit"
+          className="w-full"
+          onClick={handleSubmit(onSubmit)}
+          disabled={!!imageError}
+        >
           Submit Job Posting
         </Button>
       </CardFooter>
@@ -309,4 +367,4 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
   );
 };
 
-export default JobPostingForm;    
+export default JobPostingForm;
