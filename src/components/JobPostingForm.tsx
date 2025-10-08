@@ -184,6 +184,7 @@ const JobPostingForm = ({ isEdit, jobId }: JobPostingFormProps) => {
                       <SelectItem value="contract">Contract</SelectItem>
                       <SelectItem value="freelance">Freelance</SelectItem>
                       <SelectItem value="internship">Internship</SelectItem>
+                        <SelectItem value="Temporary">Temporary</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

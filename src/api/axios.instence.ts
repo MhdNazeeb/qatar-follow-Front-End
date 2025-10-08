@@ -1,11 +1,12 @@
 import { getLocalData } from "@/utils/locallStorage";
 import axios from "axios";
-const baseurl = "https://qatarfollow.xyz/v1/admin";
-// const baseurl = "http://localhost:3005/v1/admin"
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 
 
 const adminApi = axios.create({
-  baseURL: baseurl,
+  baseURL: baseUrl,
   headers: {
     "Content-Type": "application/json",
 
